@@ -1,0 +1,97 @@
+<script type="text/javascript" src="/Vendor/js-emoji/emoji.js"></script>
+
+<script type="text/javascript">
+
+  function doMagicLinks()
+  {
+  	var anchors = document.getElementById("insert").parentNode.parentNode.getElementsByTagName("a");
+  	for(var i = 0; i < anchors.length; i++)
+  	{
+  		var anchor = anchors.item(i);
+  		if(anchor.href.match(/\.(png|jpg|jpeg|gif)$/ig)) {
+        inlineImg(anchor);
+      } else if(anchor.href.match(/\.(mov)$/ig)) {
+  			inlineVideo(anchor);
+      }
+  	}
+  }
+
+  function doEmoji(html)
+  {
+    if (!!emoji) {
+      emoji.include_title = true;
+      emoji.img_path = "/Vendor/gemojis/images/emoji/";
+      html = emoji.replace_colons(emoji.replace_unified(html));
+    }
+    return html;
+  }
+
+  function inlineImg(node)
+  {
+  	var img = document.createElement("img");
+  	img.src = node.href;
+  	img.setAttribute("txt", node.innerHTML);
+  	img.setAttribute("class", "inlineImg");
+  	node.parentNode.replaceChild(img, node);
+  	img.onclick = function() { revertLink(img); return false; };
+  }
+
+  function revertLink(node)
+  {
+  	var a = document.createElement("a");
+  	a.href = node.src;
+  	a.innerHTML = node.getAttribute("txt");
+  	node.parentNode.replaceChild(a, node);
+  	a.onclick = function() { if(window.event.shiftKey) return true; inlineImg(a); return false; };
+  }
+
+  function inlineVideo(node)
+  {
+  	var vwrap = document.createElement("div");
+  	vwrap.setAttribute("class", "inlineVideo");
+  	vwrap.setAttribute("src", node.href);
+  	vwrap.setAttribute("txt", node.innerHTML);
+
+  	var vid = document.createElement("video");
+  	vid.setAttribute("controls", "controls");
+  	vid.setAttribute("autoplay", "autoplay");
+  	vid.width = window.innerWidth * 0.8;
+  	vid.src = node.href;
+  	vwrap.appendChild(vid);
+  	vwrap.appendChild(document.createElement("br"));
+
+  	var close = document.createElement("a");
+  	close.href = "#";
+  	close.innerHTML = "(Close)";
+  	close.onclick = function() { revertVideo(vwrap); return false; };
+  	vwrap.appendChild(close);
+
+  	node.parentNode.replaceChild(vwrap, node);
+  }
+
+  function revertVideo(node)
+  {
+  	var a = document.createElement("a");
+  	a.href = node.getAttribute("src");
+  	a.innerHTML = node.getAttribute("txt");
+  	node.parentNode.replaceChild(a, node);
+  	a.onclick = function() { if(window.event.shiftKey) return true; inlineVideo(a); return false; };
+  }
+
+  var aM = appendMessage;
+  var aNM = appendNextMessage;
+
+  appendMessage = function(html)
+  {
+  	aM(doEmoji(html));
+  	doMagicLinks();
+  }
+
+  appendNextMessage = function(html)
+  {
+  	aNM(doEmoji(html));
+  	doMagicLinks();
+  }
+
+  setTimeout(function() { doMagicLinks(); doEmoji(); }, 1000);
+</script>

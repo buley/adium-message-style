@@ -1,0 +1,6 @@
+[submodule "Buley.AdiumMessageStyle/Contents/Resources/Vendor/js-emoji"]
+	path = Buley.AdiumMessageStyle/Contents/Resources/Vendor/js-emoji
+	url = https://github.com/iamcal/js-emoji.git
+[submodule "Buley.AdiumMessageStyle/Contents/Resources/Vendor/gemoji"]
+	path = Buley.AdiumMessageStyle/Contents/Resources/Vendor/gemoji
+	url = https://github.com/github/gemoji.git
