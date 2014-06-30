@@ -1,5 +1,5 @@
-<script type="text/javascript" src="/Vendor/js-emoji/emoji.js"></script>
-
+<script type="text/javascript" src="./Vendor/js-emoji/emoji.js"></script>
+<style type="text/css" src="./Vendor/js-emoji/emoji.css"></style>
 <script type="text/javascript">
 
   function doMagicLinks()
@@ -20,8 +20,8 @@
   {
     if (!!emoji) {
       emoji.include_title = true;
-      emoji.img_path = "/Vendor/gemojis/images/emoji/";
-      html = emoji.replace_colons(emoji.replace_unified(html));
+      emoji.img_path = "./Vendor/gemojis/images/emoji/";
+      html = emoji.replace_colons(html);
     }
     return html;
   }
