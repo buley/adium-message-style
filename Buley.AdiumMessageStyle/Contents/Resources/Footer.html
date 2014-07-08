@@ -2,19 +2,36 @@
 <style type="text/css" src="./Vendor/js-emoji/emoji.css"></style>
 <script type="text/javascript">
 
-  function doMagicLinks()
+  function doLinks()
   {
-  	var anchors = document.getElementById("insert").parentNode.parentNode.getElementsByTagName("a");
-  	for(var i = 0; i < anchors.length; i++)
-  	{
-  		var anchor = anchors.item(i);
-  		if(anchor.href.match(/\.(png|jpg|jpeg|gif)$/ig)) {
-        inlineImg(anchor);
-      } else if(anchor.href.match(/\.(mov)$/ig)) {
-  			inlineVideo(anchor);
+      var found = false, anchors = document.getElementsByClassName("message");
+      for(var i = 0; i < anchors.length; i++)
+      {
+          var anchor = anchors.item(i);
+	if ( found || ( !!doLinks.last || doLinks.last === anchors[i-1] ) ) {
+		doLinks.last = anchor;
+	}
+          if(anchor.href.match(/\.(png|jpg|jpeg|gif)$/ig)) {
+            inlineImg(anchor);
+              } else if(anchor.href.match(/\.(mov)$/ig)) {
+                    inlineVideo(anchor);
+              }
       }
-  	}
   }
+
+  function doSounds(html)
+  {
+    var match = html.toLowerCase().match(/(\/play ([a-z]+))/);
+    if (null !== match) {
+      html = html.replace( match[1], [
+    '<audio controls>',
+    '<source src="./Sounds/' + match[2] + '.mp3" type="audio/mpeg">',
+    '</audio>'
+      ].join('') );
+    }
+    return html;
+  }
+
 
   function doEmoji(html)
   {
@@ -28,54 +45,54 @@
 
   function inlineImg(node)
   {
-  	var img = document.createElement("img");
-  	img.src = node.href;
-  	img.setAttribute("txt", node.innerHTML);
-  	img.setAttribute("class", "inlineImg");
-  	node.parentNode.replaceChild(img, node);
-  	img.onclick = function() { revertLink(img); return false; };
+      var img = document.createElement("img");
+      img.src = node.href;
+      img.setAttribute("txt", node.innerHTML);
+      img.setAttribute("class", "inlineImg");
+      node.parentNode.replaceChild(img, node);
+      img.onclick = function() { revertLink(img); return false; };
   }
 
   function revertLink(node)
   {
-  	var a = document.createElement("a");
-  	a.href = node.src;
-  	a.innerHTML = node.getAttribute("txt");
-  	node.parentNode.replaceChild(a, node);
-  	a.onclick = function() { if(window.event.shiftKey) return true; inlineImg(a); return false; };
+      var a = document.createElement("a");
+      a.href = node.src;
+      a.innerHTML = node.getAttribute("txt");
+      node.parentNode.replaceChild(a, node);
+      a.onclick = function() { if(window.event.shiftKey) return true; inlineImg(a); return false; };
   }
 
   function inlineVideo(node)
   {
-  	var vwrap = document.createElement("div");
-  	vwrap.setAttribute("class", "inlineVideo");
-  	vwrap.setAttribute("src", node.href);
-  	vwrap.setAttribute("txt", node.innerHTML);
+      var vwrap = document.createElement("div");
+      vwrap.setAttribute("class", "inlineVideo");
+      vwrap.setAttribute("src", node.href);
+      vwrap.setAttribute("txt", node.innerHTML);
 
-  	var vid = document.createElement("video");
-  	vid.setAttribute("controls", "controls");
-  	vid.setAttribute("autoplay", "autoplay");
-  	vid.width = window.innerWidth * 0.8;
-  	vid.src = node.href;
-  	vwrap.appendChild(vid);
-  	vwrap.appendChild(document.createElement("br"));
+      var vid = document.createElement("video");
+      vid.setAttribute("controls", "controls");
+      vid.setAttribute("autoplay", "autoplay");
+      vid.width = window.innerWidth * 0.8;
+      vid.src = node.href;
+      vwrap.appendChild(vid);
+      vwrap.appendChild(document.createElement("br"));
 
-  	var close = document.createElement("a");
-  	close.href = "#";
-  	close.innerHTML = "(Close)";
-  	close.onclick = function() { revertVideo(vwrap); return false; };
-  	vwrap.appendChild(close);
+      var close = document.createElement("a");
+      close.href = "#";
+      close.innerHTML = "(Close)";
+      close.onclick = function() { revertVideo(vwrap); return false; };
+      vwrap.appendChild(close);
 
-  	node.parentNode.replaceChild(vwrap, node);
+      node.parentNode.replaceChild(vwrap, node);
   }
 
   function revertVideo(node)
   {
-  	var a = document.createElement("a");
-  	a.href = node.getAttribute("src");
-  	a.innerHTML = node.getAttribute("txt");
-  	node.parentNode.replaceChild(a, node);
-  	a.onclick = function() { if(window.event.shiftKey) return true; inlineVideo(a); return false; };
+      var a = document.createElement("a");
+      a.href = node.getAttribute("src");
+      a.innerHTML = node.getAttribute("txt");
+      node.parentNode.replaceChild(a, node);
+      a.onclick = function() { if(window.event.shiftKey) return true; inlineVideo(a); return false; };
   }
 
   var aM = appendMessage;
@@ -83,15 +100,15 @@
 
   appendMessage = function(html)
   {
-  	aM(doEmoji(html));
-  	doMagicLinks();
+      aM(doSounds(doEmoji(html)));
+      doLinks();
   }
 
   appendNextMessage = function(html)
   {
-  	aNM(doEmoji(html));
-  	doMagicLinks();
+      aNM(doSounds(doEmoji(html)));
+      doLinks();
   }
 
-  setTimeout(function() { doMagicLinks(); doEmoji(); }, 1000);
+  setTimeout(function() { doLinks(); doEmoji(); }, 1000);
 </script>
